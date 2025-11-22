@@ -1,0 +1,65 @@
+
+services:
+  ######################################
+  # 1. DATABASE SERVICE (Postgres)
+  ######################################
+  db:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      # I used the credentials found in your previous file
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: lipad123
+      POSTGRES_DB: gcs_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - webapp-network
+    restart: always
+
+  ######################################
+  # 2. BACKEND SERVICE (Node.js)
+  ######################################
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "3000:8080"
+    
+    # FIXED: Correct YAML syntax for environment variables
+    environment:
+      NODE_ENV: production
+      # Connect to external PostgreSQL server
+      DATABASE_URL: postgresql://postgres:lipad123@192.168.254.144:5432/gcs_db
+    
+    depends_on:
+      - db
+    networks:
+      - webapp-network
+    restart: always
+
+  ######################################
+  # 3. FRONTEND SERVICE (React/Vite)
+  ######################################
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - webapp-network
+    restart: always
+
+# Define the shared network and volume
+networks:
+  webapp-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local

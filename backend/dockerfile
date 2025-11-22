@@ -1,0 +1,25 @@
+# Use Node.js image
+FROM node:20-alpine
+
+# Install PostgreSQL client (required for Prisma/DB tools)
+RUN apk add --no-cache postgresql-client
+
+WORKDIR /app
+
+# Copy package files and tsconfig first
+COPY backend/package*.json backend/tsconfig.json ./
+
+# Install ALL dependencies including devDependencies (needed for TypeScript compiler)
+RUN npm ci || true
+
+# Copy source code (includes types.ts)
+COPY backend/src ./src
+
+# Build TypeScript
+RUN npx tsc
+
+# Expose the port
+EXPOSE 3000
+
+# Start command - run the setup script first, then start the server
+CMD ["sh", "-c", "node dist/setup-db.js && node dist/index.js"]
