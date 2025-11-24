@@ -247,7 +247,8 @@ fastify.get('/api/plans/:id', async (request, reply) => {
 // --- Start Server ---
 const start = async () => {
   try {
-    await fastify.listen({ port: 8080, host: '127.0.0.1' });
+    // Listen on all interfaces so other containers and the host can reach the server
+    await fastify.listen({ port: 8080, host: '0.0.0.0' });
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);

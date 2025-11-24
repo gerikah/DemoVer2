@@ -3,9 +3,27 @@ import pg from 'pg';
 
 const { Pool } = pg;
 
+async function waitForDb(connectionString: string, retries = 20, delayMs = 1000) {
+  const pool = new Pool({ connectionString, connectionTimeoutMillis: 5000 });
+  for (let i = 0; i < retries; i++) {
+    try {
+      await pool.query('SELECT 1');
+      await pool.end();
+      return;
+    } catch (err) {
+      console.log(`Waiting for DB (attempt ${i + 1}/${retries})...`);
+      await new Promise((res) => setTimeout(res, delayMs));
+    }
+  }
+  throw new Error('Database did not become available in time');
+}
+
 async function setupDatabase() {
+  await waitForDb(process.env.DATABASE_URL || '');
+
   const pool = new Pool({
-    connectionString: process.env.DATABASE_URL
+    connectionString: process.env.DATABASE_URL,
+    connectionTimeoutMillis: 5000
   });
 
   try {
@@ -50,4 +68,7 @@ async function setupDatabase() {
   }
 }
 
-setupDatabase().catch(console.error);
+setupDatabase().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

@@ -6,7 +6,7 @@ services:
   db:
     image: postgres:16-alpine
     ports:
-      - "5432:5432"
+      - "15432:5432"
     environment:
       # I used the credentials found in your previous file
       POSTGRES_USER: postgres
@@ -17,6 +17,12 @@ services:
     networks:
       - webapp-network
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d gcs_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   ######################################
   # 2. BACKEND SERVICE (Node.js)
@@ -31,11 +37,12 @@ services:
     # FIXED: Correct YAML syntax for environment variables
     environment:
       NODE_ENV: production
-      # Connect to external PostgreSQL server
-      DATABASE_URL: postgresql://postgres:lipad123@192.168.254.144:5432/gcs_db
+      # Connect to the Docker 'db' service on the compose network
+      DATABASE_URL: postgresql://postgres:lipad123@db:5432/gcs_db
     
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - webapp-network
     restart: always

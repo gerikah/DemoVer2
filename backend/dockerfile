@@ -10,7 +10,7 @@ WORKDIR /app
 COPY backend/package*.json backend/tsconfig.json ./
 
 # Install ALL dependencies including devDependencies (needed for TypeScript compiler)
-RUN npm ci || true
+RUN npm install
 
 # Copy source code (includes types.ts)
 COPY backend/src ./src
@@ -18,8 +18,8 @@ COPY backend/src ./src
 # Build TypeScript
 RUN npx tsc
 
-# Expose the port
-EXPOSE 3000
+# Expose the port the app listens on
+EXPOSE 8080
 
 # Start command - run the setup script first, then start the server
 CMD ["sh", "-c", "node dist/setup-db.js && node dist/index.js"]
