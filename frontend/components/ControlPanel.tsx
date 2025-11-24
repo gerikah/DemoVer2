@@ -1,9 +1,9 @@
 import React from 'react';
 
 const Logo = () => (
-    <div className="w-24 h-24 mx-auto mb-2">
-        <img src="/logo.png?v=1" alt="Mosquito Control Drone Logo" className="w-full h-full object-contain" />
-    </div>
+  <div className="w-24 h-24 mx-auto mb-2">
+    <img src="/logo.png?v=2" alt="Mosquito Control Drone Logo" className="w-full h-full object-contain" />
+  </div>
 );
 const DashboardIcon = () => <svg className="w-6 h-6 mr-3" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>;
 const AnalyticsIcon = () => <svg className="w-6 h-6 mr-3" viewBox="0 0 24 24" fill="currentColor"><path d="M16,11V3H8v8H2v2h2v2H2v2h6v-2h2v2h8v-2h-2v-2h2V11H16z M10,5h2v6h-2V5z M6,13H4v-2h2V13z M6,17H4v-2h2V17z M14,13h-2v6h2V13z M20,13h-2v-2h2V13z M20,17h-2v-2h2V17z"/></svg>;
